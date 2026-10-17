@@ -1,0 +1,57 @@
+id: algebra_diagnostico
+prerrequisito: "Ninguno. Esta puerta se recorre antes de probabilidad condicional."
+puerta: true
+explicacion:
+  titulo: "Diagnóstico de álgebra"
+  texto: "Cinco preguntas cortas. Si una sale mal, nos quedamos ahí. Probabilidad se abre cuando las cinco están bien."
+items_opcion_multiple:
+  - id: alg-01
+    tema: fracciones
+    pregunta: "La fracción 12/18 simplificada es:"
+    opciones:
+      - {id: a, texto: "3/5"}
+      - {id: b, texto: "2/3"}
+      - {id: c, texto: "4/6"}
+      - {id: d, texto: "6/9"}
+    respuesta_correcta: b
+    paso_clave: "Dividí numerador y denominador por 6."
+  - id: alg-02
+    tema: porcentajes
+    pregunta: "¿A qué porcentaje equivale la fracción 3/4?"
+    opciones:
+      - {id: a, texto: "25%"}
+      - {id: b, texto: "50%"}
+      - {id: c, texto: "75%"}
+      - {id: d, texto: "100%"}
+    respuesta_correcta: c
+    paso_clave: "Multipliqué 3/4 por 100 para obtener el porcentaje."
+  - id: alg-03
+    tema: ecuación simple
+    pregunta: "Resolvé la ecuación 4x = 1,2"
+    opciones:
+      - {id: a, texto: "0,2"}
+      - {id: b, texto: "0,3"}
+      - {id: c, texto: "0,4"}
+      - {id: d, texto: "4,8"}
+    respuesta_correcta: b
+    paso_clave: "Dividí 1,2 por 4."
+  - id: alg-04
+    tema: leer P(A|B)
+    pregunta: "¿Qué significa la notación P(A|B)?"
+    opciones:
+      - {id: a, texto: "Probabilidad de A y B juntas."}
+      - {id: b, texto: "Probabilidad de A dado que ocurrió B."}
+      - {id: c, texto: "Probabilidad de B dado que ocurrió A."}
+      - {id: d, texto: "Probabilidad de A o B."}
+    respuesta_correcta: b
+    paso_clave: "El | se lee dado y B es el evento que condiciona."
+  - id: alg-05
+    tema: cuál es el denominador
+    pregunta: "En P(A|B) = P(A y B) / ?, ¿qué va en el denominador?"
+    opciones:
+      - {id: a, texto: "P(A)"}
+      - {id: b, texto: "P(B)"}
+      - {id: c, texto: "P(A o B)"}
+      - {id: d, texto: "P(A y B)"}
+    respuesta_correcta: b
+    paso_clave: "El denominador es la probabilidad del evento que condiciona."

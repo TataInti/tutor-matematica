@@ -1,13 +1,29 @@
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.curriculum import load_unit
+from app.db import get_database_path, mark_item_known
 from app.main import app
 
 
 SESSION_PATH = "/sesion/probabilidad-condicional"
 UNIT_PATH = Path(__file__).resolve().parents[1] / "curriculum" / "probabilidad_condicional.yml"
+DIAGNOSTIC_ITEM_IDS = ("alg-01", "alg-02", "alg-03", "alg-04", "alg-05")
+DIAGNOSTIC_UNIT_ID = "algebra_diagnostico"
+
+
+@pytest.fixture(autouse=True)
+def approved_diagnosis(tmp_path: Path):
+    db_path = tmp_path / "tutor.db"
+    app.dependency_overrides[get_database_path] = lambda: db_path
+    for item_id in DIAGNOSTIC_ITEM_IDS:
+        mark_item_known(item_id, DIAGNOSTIC_UNIT_ID, db_path)
+    try:
+        yield
+    finally:
+        app.dependency_overrides.pop(get_database_path, None)
 
 
 def test_session_page_shows_concept_and_multiple_choice_test() -> None:

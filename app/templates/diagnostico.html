@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnóstico de álgebra · Tutor de matemática</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #17212b; background: #f4f6f8; }
+    body { margin: 0; }
+    main { width: min(720px, calc(100% - 2rem)); margin: 2rem auto; }
+    section { background: white; border: 1px solid #d9e0e6; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    .sobrelinea { color: #526372; font-size: .9rem; }
+    fieldset { border: 1px solid #d9e0e6; border-radius: 8px; margin: 1rem 0; padding: 1rem; }
+    legend { font-weight: 650; padding: 0 .25rem; }
+    label { display: block; padding: .4rem 0; cursor: pointer; }
+    input { margin-right: .45rem; }
+    button { border: 0; border-radius: 8px; background: #145da0; color: white; cursor: pointer; font: inherit; font-weight: 650; padding: .75rem 1rem; }
+    .aviso { border-left: 4px solid #145da0; padding: .75rem 1rem; background: #edf4fb; }
+    .paso { border-left: 4px solid #bb5b18; padding: .75rem 1rem; background: #fff5eb; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="sobrelinea">Puerta de álgebra · Pregunta {{ numero_item }} de {{ total_items }}</p>
+    <h1>{{ titulo }}</h1>
+    <p>{{ introduccion }}</p>
+    {% if mensaje %}<p class="aviso" role="status">{{ mensaje }}</p>{% endif %}
+
+    <section>
+      <form method="post" action="/sesion/algebra-diagnostico">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <fieldset>
+          <legend>{{ item.pregunta }}</legend>
+          {% for opcion in item.opciones %}
+            <label for="{{ item.id }}-{{ opcion.id }}">
+              <input
+                id="{{ item.id }}-{{ opcion.id }}"
+                type="radio"
+                name="respuesta"
+                value="{{ opcion.id }}"
+                required>
+              {{ opcion.texto }}
+            </label>
+          {% endfor %}
+        </fieldset>
+        <button type="submit">Responder</button>
+      </form>
+    </section>
+
+    {% if paso_clave %}
+      <section class="paso" aria-live="polite">
+        <h2>Paso clave</h2>
+        <p>{{ paso_clave }}</p>
+      </section>
+    {% endif %}
+  </main>
+</body>
+</html>

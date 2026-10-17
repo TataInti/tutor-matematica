@@ -22,15 +22,19 @@ def load_unit(path: str | Path) -> dict[str, Any]:
     if not isinstance(unit, dict):
         raise CurriculumError("La unidad tiene que ser un objeto YAML.")
 
-    for field in (
-        "id",
-        "prerrequisito",
-        "explicacion",
-        "ejemplo_vida",
-        "ejemplo_empresa",
-    ):
+    is_gate = unit.get("puerta") is True
+    required_fields = ["id", "prerrequisito", "explicacion"]
+    if not is_gate:
+        required_fields.extend(("ejemplo_vida", "ejemplo_empresa"))
+    for field in required_fields:
         if field not in unit or unit[field] is None or unit[field] == "":
             raise CurriculumError(f"Falta el campo obligatorio: {field}.")
+
+    # En una puerta estos ejemplos son opcionales; si aparecen, igual se validan.
+    if is_gate:
+        for field in ("ejemplo_vida", "ejemplo_empresa"):
+            if field in unit and (unit[field] is None or unit[field] == ""):
+                raise CurriculumError(f"El campo {field} no puede estar vacío.")
 
     questions = unit.get("items_opcion_multiple")
     if not isinstance(questions, list) or len(questions) != 5:
@@ -55,9 +59,13 @@ def load_unit(path: str | Path) -> dict[str, Any]:
         for field in ("id", "pregunta"):
             if field not in question or not question[field]:
                 raise CurriculumError(f"Falta {field} en {context}.")
+        if is_gate and not question.get("paso_clave"):
+            raise CurriculumError(f"Falta paso_clave en {context}.")
 
     exercises = unit.get("ejercicios_papel")
-    if not isinstance(exercises, list) or len(exercises) != 3:
+    if is_gate and exercises in (None, []):
+        exercises = []
+    elif not isinstance(exercises, list) or len(exercises) != 3:
         raise CurriculumError("La unidad tiene que incluir tres ejercicios de papel.")
 
     for index, exercise in enumerate(exercises):
