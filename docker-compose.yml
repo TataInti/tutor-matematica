@@ -5,3 +5,7 @@ services:
       - "127.0.0.1:8090:8090"
     volumes:
       - ./data:/data
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_TUTOR_MODEL: ${OPENROUTER_TUTOR_MODEL:-}
+      OPENROUTER_VISION_MODEL: ${OPENROUTER_VISION_MODEL:-}
