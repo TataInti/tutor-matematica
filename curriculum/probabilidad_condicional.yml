@@ -1,0 +1,103 @@
+id: probabilidad_condicional
+prerrequisito: "Manejar fracciones, porcentajes y la idea de contar casos posibles."
+explicacion:
+  titulo: "Probabilidad condicional"
+  texto: >-
+    La probabilidad condicional responde qué chance hay de que ocurra A cuando
+    ya sabemos que ocurrió B. Miramos solamente los casos donde pasó B y, dentro
+    de ese grupo, contamos cuántos también cumplen A. La condición tiene que
+    tener probabilidad mayor que cero.
+  formula: "P(A | B) = P(A ∩ B) / P(B), con P(B) > 0"
+ejemplo_vida:
+  titulo: "Demoras del colectivo cuando llueve"
+  texto: >-
+    En 100 días observados, llovió en 20. En 15 de esos días el colectivo se
+    demoró. Si sabemos que llovió, la chance de demora se calcula usando solo
+    esos 20 días.
+  calculo: "P(demora | lluvia) = 15 / 20 = 0,75 (75 %)"
+ejemplo_empresa:
+  titulo: "Reclamos en una tienda online ficticia"
+  texto: >-
+    En un proyecto genérico se revisan 200 pedidos: 40 llegaron tarde y 10 de
+    esos pedidos tuvieron un reclamo. Si la pregunta es por el reclamo dado que
+    el pedido llegó tarde, el grupo de referencia son esos 40 pedidos tardíos.
+  calculo: "P(reclamo | llegó tarde) = 10 / 40 = 0,25 (25 %)"
+items_opcion_multiple:
+  - id: pc-01
+    pregunta: "Si P(A ∩ B) = 0,12 y P(B) = 0,30, ¿cuánto vale P(A | B)?"
+    opciones:
+      - id: a
+        texto: "0,12"
+      - id: b
+        texto: "0,40"
+      - id: c
+        texto: "0,42"
+      - id: d
+        texto: "2,5"
+    respuesta_correcta: b
+    explicacion_respuesta: "Dividí la intersección por la probabilidad de la condición: 0,12 / 0,30 = 0,40."
+  - id: pc-02
+    pregunta: "En 20 días de lluvia, el colectivo se demoró 15 veces. ¿Cuál es P(demora | lluvia)?"
+    opciones:
+      - id: a
+        texto: "0,15"
+      - id: b
+        texto: "0,20"
+      - id: c
+        texto: "0,75"
+      - id: d
+        texto: "0,80"
+    respuesta_correcta: c
+    explicacion_respuesta: "Entre los días con lluvia hubo 15 demoras de un total de 20: 15 / 20 = 0,75."
+  - id: pc-03
+    pregunta: "En P(A | B), ¿qué representa el denominador de la fórmula?"
+    opciones:
+      - id: a
+        texto: "P(A), la probabilidad de A"
+      - id: b
+        texto: "P(B), la probabilidad de la condición conocida"
+      - id: c
+        texto: "P(A ∩ B), la probabilidad de que ocurran ambas"
+      - id: d
+        texto: "1 - P(B), la probabilidad de que no ocurra B"
+    respuesta_correcta: b
+    explicacion_respuesta: "El denominador es P(B): nos quedamos con los casos donde ocurrió la condición B."
+  - id: pc-04
+    pregunta: "¿Qué pasa con P(A | B) si P(B) = 0?"
+    opciones:
+      - id: a
+        texto: "Vale 0 para cualquier A"
+      - id: b
+        texto: "Vale 1 para cualquier A"
+      - id: c
+        texto: "No está definida con esta fórmula"
+      - id: d
+        texto: "Vale P(A)"
+    respuesta_correcta: c
+    explicacion_respuesta: "No se puede dividir por P(B) cuando vale cero; además, B no ocurre en ningún caso."
+  - id: pc-05
+    pregunta: "Si A y B son independientes y P(A) = 0,40, ¿cuánto vale P(A | B)?"
+    opciones:
+      - id: a
+        texto: "0,20"
+      - id: b
+        texto: "0,40"
+      - id: c
+        texto: "0,50"
+      - id: d
+        texto: "No se puede saber"
+    respuesta_correcta: b
+    explicacion_respuesta: "Si A y B son independientes, saber que pasó B no cambia la probabilidad de A."
+ejercicios_papel:
+  - id: papel-01
+    enunciado: "En 20 días de lluvia, el colectivo se demoró 15 veces. Calculá la probabilidad de demora dado que llovió."
+    resultado_esperado: "0,75"
+    paso_clave: "Usar los 20 días de lluvia como grupo condicionado y dividir 15 por 20."
+  - id: papel-02
+    enunciado: "Si P(A ∩ B) = 0,18 y P(B) = 0,60, calculá P(A | B)."
+    resultado_esperado: "0,30"
+    paso_clave: "Aplicar P(A | B) = P(A ∩ B) / P(B): 0,18 / 0,60."
+  - id: papel-03
+    enunciado: "En un proyecto genérico, 12 de 40 pedidos tardíos tuvieron un reclamo. Calculá P(reclamo | llegó tarde)."
+    resultado_esperado: "0,30"
+    paso_clave: "Tomar los 40 pedidos tardíos como grupo condicionado y dividir 12 por 40."

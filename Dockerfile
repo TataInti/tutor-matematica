@@ -7,6 +7,7 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 COPY app ./app
+COPY curriculum ./curriculum
 RUN pip install --no-cache-dir .
 
 EXPOSE 8090
