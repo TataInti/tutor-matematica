@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-import json
+import asyncio
+from io import BytesIO
 from pathlib import Path
 
 import httpx
 import pytest
+from fastapi import UploadFile
+from PIL import Image
+from starlette.datastructures import Headers
 
 from app.grader import (
     VisionReadError,
@@ -14,6 +18,7 @@ from app.grader import (
 )
 from app.openrouter import OpenRouterClient
 from app.uploads import (
+    MAX_IMAGE_SIDE,
     MAX_UPLOAD_BYTES,
     ImageTooLargeError,
     UnsupportedImageTypeError,
@@ -23,6 +28,13 @@ from app.uploads import (
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "vision_ok.json"
+
+
+def make_image_bytes(size: tuple[int, int], image_format: str = "JPEG") -> bytes:
+    image = Image.new("RGB", size, color=(20, 100, 180))
+    stream = BytesIO()
+    image.save(stream, format=image_format)
+    return stream.getvalue()
 
 
 def test_decimal_comma_decimal_point_and_fraction_match() -> None:
@@ -90,13 +102,31 @@ def test_valid_but_wrong_answer_is_graded_as_incorrect() -> None:
 
 
 def test_jpeg_and_png_are_accepted_and_other_types_are_rejected() -> None:
-    jpeg = validate_image_upload(b"\xff\xd8\xffdata", "image/jpeg")
-    png = validate_image_upload(b"\x89PNG\r\n\x1a\ndata", "image/png")
+    jpeg = validate_image_upload(make_image_bytes((64, 32)), "image/jpeg")
+    png = validate_image_upload(make_image_bytes((64, 32), "PNG"), "image/png")
 
     assert jpeg.media_type == "image/jpeg"
     assert png.media_type == "image/png"
     with pytest.raises(UnsupportedImageTypeError):
         validate_image_upload(b"GIF89a", "image/gif")
+
+
+def test_wide_image_is_resized_to_a_1600_pixel_long_side() -> None:
+    original = make_image_bytes((2400, 1200))
+    prepared = validate_image_upload(original, "image/jpeg")
+
+    with Image.open(BytesIO(prepared.content)) as resized:
+        assert max(resized.size) == MAX_IMAGE_SIDE
+        assert resized.size == (1600, 800)
+
+
+def test_image_at_or_below_limit_is_not_upscaled_or_reencoded() -> None:
+    original = make_image_bytes((800, 400))
+    prepared = validate_image_upload(original, "image/jpeg")
+
+    assert prepared.content == original
+    with Image.open(BytesIO(prepared.content)) as image:
+        assert max(image.size) == 800
 
 
 def test_oversized_photo_is_rejected_before_http_request() -> None:
@@ -112,7 +142,7 @@ def test_oversized_photo_is_rejected_before_http_request() -> None:
         vision_model="vision-model-from-test-env",
         transport=httpx.MockTransport(handler),
     )
-    oversized = b"\xff\xd8\xff" + b"x" * (MAX_UPLOAD_BYTES - 2)
+    oversized = bytes.fromhex("ffd8ff") + b"x" * (MAX_UPLOAD_BYTES - 2)
     try:
         with pytest.raises(ImageTooLargeError):
             client.complete_vision("Leé la respuesta.", oversized, "image/jpeg")
@@ -122,16 +152,13 @@ def test_oversized_photo_is_rejected_before_http_request() -> None:
     assert requests == 0
 
 
-@pytest.mark.anyio
-async def test_upload_reader_limits_bytes_before_validation() -> None:
-    from fastapi import UploadFile
-    from io import BytesIO
-
+def test_upload_reader_limits_bytes_before_validation() -> None:
+    oversized = bytes.fromhex("ffd8ff") + b"x" * (MAX_UPLOAD_BYTES - 2)
     upload = UploadFile(
-        file=BytesIO(b"\xff\xd8\xff" + b"x" * (MAX_UPLOAD_BYTES - 2)),
+        file=BytesIO(oversized),
         filename="hoja.jpg",
-        headers={"content-type": "image/jpeg"},
+        headers=Headers({"content-type": "image/jpeg"}),
     )
 
     with pytest.raises(ImageTooLargeError):
-        await read_image_upload(upload)
+        asyncio.run(read_image_upload(upload))

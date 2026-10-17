@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from io import BytesIO
 from pathlib import Path
 
 import httpx
 import pytest
+from PIL import Image
 
 from app.openrouter import (
     CHAT_COMPLETIONS_URL,
@@ -17,6 +19,13 @@ from app.openrouter import (
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "vision_ok.json"
+
+
+def make_jpeg_bytes() -> bytes:
+    image = Image.new("RGB", (64, 64), color=(40, 120, 180))
+    stream = BytesIO()
+    image.save(stream, format="JPEG")
+    return stream.getvalue()
 
 
 def test_text_body_has_no_image_content() -> None:
@@ -76,7 +85,7 @@ def test_vision_request_sends_fixture_content_through_mock_http(monkeypatch) -> 
 
     with OpenRouterClient(transport=httpx.MockTransport(handler)) as client:
         response = client.complete_vision(
-            "Leé el resultado escrito.", b"\xff\xd8\xffdemo", "image/jpeg"
+            "Leé el resultado escrito.", make_jpeg_bytes(), "image/jpeg"
         )
 
     assert captured["body"]["model"] == "vision-model-from-test-env"
