@@ -101,6 +101,19 @@
           </section>
         {% endif %}
       {% endif %}
+
+      {% if feedback is defined and feedback %}
+        <section aria-live="polite" aria-labelledby="feedback-tutor">
+          {% if feedback.modelo_llamado %}
+            <h3 id="feedback-tutor">{{ "Otra perspectiva" if feedback.otra_perspectiva else "Pista del tutor" }}: {{ feedback.perspectiva_nombre }}</h3>
+            <p>{{ feedback.texto }}</p>
+          {% endif %}
+          {% if feedback.mostrar_paso_clave %}
+            <h3 id="feedback-tutor">Paso clave</h3>
+            <p>{{ feedback.paso_clave }}</p>
+          {% endif %}
+        </section>
+      {% endif %}
     </section>
   </main>
 </body>
